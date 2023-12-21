@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -19,10 +20,10 @@ func TestSuccesfulResponse(t *testing.T) {
 
 	defer server.Close()
 
-	body := ScrapeRandom(server.URL, client)
+	body, _ := ScrapeRandom(server.URL, client)
 
 	if body != expected {
-		t.Errorf("Expected response text %s, got %s", expected, body)
+		t.Errorf("Expected response text \"%s\", got \"%s\"", expected, body)
 	}
 }
 
@@ -32,7 +33,7 @@ func TestUserAgentHeader(t *testing.T) {
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			userAgentHeader := r.Header.Get("User-Agent")
 			if userAgentHeader != expectedUserAgent {
-				t.Errorf("Expected user agent header %s, got %s", expectedUserAgent, userAgentHeader)
+				t.Errorf("Expected user agent header \"%s\", got \"%s\"", expectedUserAgent, userAgentHeader)
 			}
 
 			io.WriteString(w, "ok")
@@ -53,7 +54,7 @@ func TestAcceptLanguageHeader(t *testing.T) {
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			acceptLanguageHeader := r.Header.Get("Accept-Language")
 			if acceptLanguageHeader != expectedAcceptLanguage {
-				t.Errorf("Expected accept language header %s, got %s", expectedAcceptLanguage, acceptLanguageHeader)
+				t.Errorf("Expected accept language header \"%s\", got \"%s\"", expectedAcceptLanguage, acceptLanguageHeader)
 			}
 
 			io.WriteString(w, "ok")
@@ -74,7 +75,7 @@ func TestAcceptHeader(t *testing.T) {
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			acceptHeader := r.Header.Get("Accept")
 			if acceptHeader != expectedAccept {
-				t.Errorf("Expected accept header %s, got %s", expectedAccept, acceptHeader)
+				t.Errorf("Expected accept header \"%s\", got \"%s\"", expectedAccept, acceptHeader)
 			}
 
 			io.WriteString(w, "ok")
@@ -86,4 +87,24 @@ func TestAcceptHeader(t *testing.T) {
 	defer server.Close()
 
 	ScrapeRandom(server.URL, client)
+}
+
+func TestNonSuccesfulResponse(t *testing.T) {
+	expectedLog := fmt.Sprint("Request failed: 503")
+
+	server := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusServiceUnavailable)
+		}),
+	)
+
+	client := *server.Client()
+
+	defer server.Close()
+
+	_, err := ScrapeRandom(server.URL, client)
+
+	if err.Error() != expectedLog {
+		t.Errorf("Expected log \"%s\", got \"%s\"", expectedLog, err.Error())
+	}
 }
