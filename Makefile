@@ -15,3 +15,6 @@ clean:
 
 test:
 	go test
+
+install:
+	cp .githooks/* .git/hooks/
