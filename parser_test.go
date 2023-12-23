@@ -6,7 +6,7 @@ import (
 
 func TestParsedHtmlWithSingleResult(t *testing.T) {
 	results, _ := ParseResults(`
-!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
   <body>
 	  <section class="grid">
@@ -81,7 +81,7 @@ func TestParsedHtmlWithSingleResult(t *testing.T) {
 
 func TestParsedHtmlWithMultipleResults(t *testing.T) {
 	results, _ := ParseResults(`
-!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
   <body>
 	  <section class="grid">
@@ -158,7 +158,7 @@ func TestParsedHtmlWithMultipleResults(t *testing.T) {
 
 func TestParsedHtmlWithoutAuthorName(t *testing.T) {
 	results, _ := ParseResults(`
-!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
   <body>
 	  <section class="grid">
@@ -213,7 +213,7 @@ func TestParsedHtmlWithoutAuthorName(t *testing.T) {
 
 func TestParsedHtmlWithoutUpdatedAt(t *testing.T) {
 	results, _ := ParseResults(`
-!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
   <body>
 	  <section class="grid">
@@ -267,7 +267,7 @@ func TestParsedHtmlWithoutUpdatedAt(t *testing.T) {
 
 func TestParsedEmptyHtml(t *testing.T) {
 	results, err := ParseResults(`
-!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
 </html>
 `)
@@ -283,7 +283,7 @@ func TestParsedEmptyHtml(t *testing.T) {
 
 func TestMissingList(t *testing.T) {
 	results, err := ParseResults(`
-!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
   <body>
 	  <section class="grid">
@@ -305,7 +305,7 @@ func TestMissingList(t *testing.T) {
 
 func TestMissingListItems(t *testing.T) {
 	results, err := ParseResults(`
-!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
   <body>
 	  <section class="grid">
@@ -329,7 +329,7 @@ func TestMissingListItems(t *testing.T) {
 
 func TestInvalidParsing(t *testing.T) {
 	results, err := ParseResults(`
-!DOCTYPE html
+<!DOCTYPE html>
 <html lang="en">
   <body>
 	  <section class="grid">

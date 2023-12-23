@@ -252,7 +252,7 @@ func ParseResults(body string) ([]Result, error) {
 		return []Result{}, err
 	}
 
-	list, isListFound := findList(doc.FirstChild)
+	list, isListFound := findList(doc)
 
 	if !isListFound {
 		return []Result{}, &DomNodeNotFoundError{}
