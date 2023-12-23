@@ -50,35 +50,19 @@ func hasClass(attributes *[]html.Attribute, name string) bool {
 }
 
 func isWebsitesList(node *html.Node) bool {
-	if node.Data != "ol" {
-		return false
-	}
-
-	return hasClass(&node.Attr, "websites")
+	return node.Data == "ol" && hasClass(&node.Attr, "websites")
 }
 
 func isWebsiteListItem(node *html.Node) bool {
-	if node.Data != "li" {
-		return false
-	}
-
-	return hasClass(&node.Attr, "websites__item")
+	return node.Data == "li" && hasClass(&node.Attr, "websites__item")
 }
 
 func isWebsiteDetail(node *html.Node) bool {
-	if node.Data != "details" {
-		return false
-	}
-
-	return hasClass(&node.Attr, "website__details")
+	return node.Data == "details" && hasClass(&node.Attr, "website__details")
 }
 
 func isWebsiteDetailBody(node *html.Node) bool {
-	if node.Data != "div" {
-		return false
-	}
-
-	return hasClass(&node.Attr, "website__details__body")
+	return node.Data == "div" && hasClass(&node.Attr, "website__details__body")
 }
 
 func findList(node *html.Node) (*html.Node, bool) {
