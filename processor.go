@@ -17,7 +17,7 @@ func (*ResultNotFoundError) Error() string {
 func getRecordFile() (*os.File, error) {
 	path := path.Join(".", recordFileName)
 
-	return os.OpenFile(path, os.O_CREATE|os.O_WRONLY, 0644)
+	return os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 }
 
 func filterOutPreviousResults(results *[]Result, file *os.File) []Result {
