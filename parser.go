@@ -107,7 +107,7 @@ func getListItems(node *html.Node) []*html.Node {
 
 func getLinkWithAnchor(node *html.Node) (string, string) {
 	var url string
-	title := fmt.Sprint(node.FirstChild)
+	title := fmt.Sprint(node.FirstChild.Data)
 	for _, attr := range node.Attr {
 		if attr.Key == "href" {
 			url = attr.Val
@@ -115,6 +115,33 @@ func getLinkWithAnchor(node *html.Node) (string, string) {
 	}
 
 	return url, title
+}
+
+func extractAuthorName(text string) string {
+	parts := strings.Split(text, ",")
+	leading := strings.TrimSpace(parts[0])
+
+	name, _ := strings.CutPrefix(leading, "By")
+
+	return strings.TrimSpace(name)
+}
+
+func getAuthorName(node *html.Node) string {
+	var authorName = ""
+	var traverse func(node *html.Node)
+	traverse = func(node *html.Node) {
+		if node.Type == html.ElementNode && node.Data == "small" {
+			authorName = extractAuthorName(node.FirstChild.Data)
+		}
+
+		for child := node.FirstChild; child != nil; child = child.NextSibling {
+			traverse(child)
+		}
+	}
+
+	traverse(node)
+
+	return authorName
 }
 
 func parseListItemDetails(node *html.Node) (Result, bool) {
@@ -130,8 +157,12 @@ func parseListItemDetails(node *html.Node) (Result, bool) {
 			r.url = url
 		}
 
-		if node.Type == html.ElementNode && node.Data == "small" {
-			r.authorName = fmt.Sprint(node.FirstChild)
+		if node.Type == html.ElementNode && node.Data == "footer" {
+			r.authorName = getAuthorName(node)
+		}
+
+		if node.Type == html.ElementNode && node.Data == "blockquote" {
+			r.summary = strings.TrimSpace(node.FirstChild.Data)
 		}
 
 		for child := node.FirstChild; child != nil; child = child.NextSibling {
@@ -143,7 +174,7 @@ func parseListItemDetails(node *html.Node) (Result, bool) {
 	traverseDetails = func(node *html.Node, r *Result) {
 		if node.Type == html.ElementNode && isWebsiteDetailBody(node) {
 			isOk = true
-			traverseDetailsBody(node.FirstChild, r)
+			traverseDetailsBody(node, r)
 		}
 
 		for child := node.FirstChild; child != nil; child = child.NextSibling {
