@@ -264,3 +264,19 @@ func TestParsedHtmlWithoutUpdatedAt(t *testing.T) {
 		t.Errorf("Expected to not have result updated at \"%d\", got \"%d\"", 0, result.updatedAt)
 	}
 }
+
+func TestParsedEmptyHtml(t *testing.T) {
+	results, err := ParseResults(`
+!DOCTYPE html
+<html lang="en">
+</html>
+`)
+
+	if len(results) != 0 {
+		t.Errorf("Expected to not have any results \"%d\", got \"%d\"", 0, len(results))
+	}
+
+	if err == nil {
+		t.Errorf("Expected to have result error \"%v\", got \"%v\"", DomNodeNotFoundError{}, err)
+	}
+}
