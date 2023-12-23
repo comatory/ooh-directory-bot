@@ -119,6 +119,11 @@ func getLinkWithAnchor(node *html.Node) (string, string) {
 
 func extractAuthorName(text string) string {
 	parts := strings.Split(text, ",")
+
+	if len(parts) == 1 {
+		return ""
+	}
+
 	leading := strings.TrimSpace(parts[0])
 
 	name, _ := strings.CutPrefix(leading, "By")
