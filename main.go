@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -16,6 +15,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println(html)
-	fmt.Print(ParseResults(html))
+	results, parseError := ParseResults(html)
+
+	if parseError != nil {
+		log.Println(parseError)
+	}
+
+	result, processError := ProcessResultForAPI(&results)
+
+	if processError != nil {
+		log.Println(processError)
+	}
+
+	log.Print(result)
 }
