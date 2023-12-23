@@ -6,7 +6,7 @@ import (
 	"path"
 )
 
-const recordFileName = "records.txt"
+const RecordFileName = "records.txt"
 
 type ResultNotFoundError struct{}
 
@@ -15,7 +15,7 @@ func (*ResultNotFoundError) Error() string {
 }
 
 func getRecordFile() (*os.File, error) {
-	path := path.Join(".", recordFileName)
+	path := path.Join(".", RecordFileName)
 
 	return os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 }
