@@ -73,6 +73,10 @@ func TestParsedHtmlWithSingleResult(t *testing.T) {
 	if result.summary != "abcdqwerty" {
 		t.Errorf("Expected to have result summary \"%s\", got \"%s\"", "abcdqwerty", result.summary)
 	}
+
+	if result.updatedAt != 1669057440 {
+		t.Errorf("Expected to have result updated at timestamp \"%d\", got \"%d\"", 1669057440, result.updatedAt)
+	}
 }
 
 func TestParsedHtmlWithMultipleResults(t *testing.T) {
@@ -202,7 +206,7 @@ func TestParsedHtmlWithoutAuthorName(t *testing.T) {
 
 	result := results[0]
 
-	if result.authorName != "" {
+	if result.authorName != "" && result.hasAuthorName() {
 		t.Errorf("Expected to have result author \"%s\", got \"%s\"", "", result.authorName)
 	}
 }

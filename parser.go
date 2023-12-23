@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"golang.org/x/net/html"
 	"strings"
+	"time"
 )
 
 type DomNodeNotFoundError struct{}
@@ -17,6 +18,15 @@ type Result struct {
 	title      string
 	summary    string
 	authorName string
+	updatedAt  int64
+}
+
+func (this *Result) hasAuthorName() bool {
+	return this.authorName != ""
+}
+
+func (this *Result) hasUpdatedAt() bool {
+	return this.updatedAt != 0
 }
 
 func newEmptyResult() Result {
@@ -25,6 +35,7 @@ func newEmptyResult() Result {
 		title:      "",
 		summary:    "",
 		authorName: "",
+		updatedAt:  0,
 	}
 }
 
@@ -149,6 +160,33 @@ func getAuthorName(node *html.Node) string {
 	return authorName
 }
 
+func getUpdatedAt(node *html.Node) int64 {
+	value := int64(0)
+
+	var traverse func(node *html.Node)
+	traverse = func(node *html.Node) {
+		if node.Type == html.ElementNode && node.Data == "time" {
+			for _, attr := range node.Attr {
+				if attr.Key == "datetime" {
+					dateTime, err := time.Parse("2006-01-02T15:04:05+00:00", attr.Val)
+
+					if err == nil {
+						value = dateTime.Unix()
+					}
+				}
+			}
+		}
+
+		for child := node.FirstChild; child != nil; child = child.NextSibling {
+			traverse(child)
+		}
+	}
+
+	traverse(node)
+
+	return value
+}
+
 func parseListItemDetails(node *html.Node) (Result, bool) {
 	result := newEmptyResult()
 	isOk := false
@@ -177,6 +215,10 @@ func parseListItemDetails(node *html.Node) (Result, bool) {
 
 	var traverseDetails func(node *html.Node, r *Result)
 	traverseDetails = func(node *html.Node, r *Result) {
+		if node.Type == html.ElementNode && node.Data == "summary" {
+			r.updatedAt = getUpdatedAt(node)
+		}
+
 		if node.Type == html.ElementNode && isWebsiteDetailBody(node) {
 			isOk = true
 			traverseDetailsBody(node, r)
