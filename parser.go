@@ -29,7 +29,7 @@ func (this *Result) hasUpdatedAt() bool {
 	return this.updatedAt != 0
 }
 
-func newEmptyResult() Result {
+func NewEmptyResult() Result {
 	return Result{
 		url:        "",
 		title:      "",
@@ -188,7 +188,7 @@ func getUpdatedAt(node *html.Node) int64 {
 }
 
 func parseListItemDetails(node *html.Node) (Result, bool) {
-	result := newEmptyResult()
+	result := NewEmptyResult()
 	isOk := false
 
 	var traverseDetailsBody func(node *html.Node, r *Result)
@@ -241,7 +241,7 @@ func parseListItem(node *html.Node) (Result, bool) {
 		}
 	}
 
-	return newEmptyResult(), false
+	return NewEmptyResult(), false
 }
 
 func ParseResults(body string) ([]Result, error) {

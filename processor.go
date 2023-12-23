@@ -49,14 +49,14 @@ func ProcessResultForAPI(results *[]Result) (*Result, error) {
 	defer file.Close()
 
 	if fileError != nil {
-		empty := newEmptyResult()
+		empty := NewEmptyResult()
 		return &empty, fileError
 	}
 
 	filteredResults := filterOutPreviousResults(results, file)
 
 	if len(filteredResults) == 0 {
-		empty := newEmptyResult()
+		empty := NewEmptyResult()
 		return &empty, &ResultNotFoundError{}
 	}
 
