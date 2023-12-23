@@ -280,3 +280,86 @@ func TestParsedEmptyHtml(t *testing.T) {
 		t.Errorf("Expected to have result error \"%v\", got \"%v\"", DomNodeNotFoundError{}, err)
 	}
 }
+
+func TestMissingList(t *testing.T) {
+	results, err := ParseResults(`
+!DOCTYPE html
+<html lang="en">
+  <body>
+	  <section class="grid">
+		  <div class="grid__content">
+			</div>
+		</section>
+	</body>
+</html>
+`)
+
+	if len(results) != 0 {
+		t.Errorf("Expected to not have any results \"%d\", got \"%d\"", 0, len(results))
+	}
+
+	if err == nil {
+		t.Errorf("Expected to have result error \"%v\", got \"%v\"", DomNodeNotFoundError{}, err)
+	}
+}
+
+func TestMissingListItems(t *testing.T) {
+	results, err := ParseResults(`
+!DOCTYPE html
+<html lang="en">
+  <body>
+	  <section class="grid">
+		  <div class="grid__content">
+			  <ol class="websites">
+				</ol>
+			</div>
+		</section>
+	</body>
+</html>
+`)
+
+	if len(results) != 0 {
+		t.Errorf("Expected to not have any results \"%d\", got \"%d\"", 0, len(results))
+	}
+
+	if err == nil {
+		t.Errorf("Expected to have result error \"%v\", got \"%v\"", DomNodeNotFoundError{}, err)
+	}
+}
+
+func TestInvalidParsing(t *testing.T) {
+	results, err := ParseResults(`
+!DOCTYPE html
+<html lang="en">
+  <body>
+	  <section class="grid">
+		  <div class="grid__content">
+			  <ol class="websites">
+				  <li class="websites__item">
+						<p class="website__intro">
+							<a href="https://acme.xyz/">Acme site</a>
+							<br>
+							<q>Home page of Acme Inc.</q> By John Appleseed.
+							<span class="text-nobr">
+								<span class="text-emoji">
+									<span aria-label="United States of America" title="United States of America">🇺🇸</span>
+								</span>
+								<a href="/blog/99999/">More info</a>
+							</span>
+						</p>
+					</li>
+				</ol>
+			</div>
+		</section>
+	</body>
+</html>
+`)
+
+	if len(results) != 0 {
+		t.Errorf("Expected to not have any results \"%d\", got \"%d\"", 0, len(results))
+	}
+
+	if err == nil {
+		t.Errorf("Expected to have result error \"%v\", got \"%v\"", DomNodeNotFoundError{}, err)
+	}
+}
