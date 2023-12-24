@@ -17,5 +17,5 @@ test:
 	go test
 
 install:
-	chmod +x .githooks/**
-	cp .githooks/* .git/hooks/
+	chmod +x githooks/**
+	cp githooks/* .git/hooks/
