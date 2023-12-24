@@ -10,7 +10,12 @@ require internal/scraper v0.0.0
 
 replace internal/scraper => ./internal/scraper
 
-require internal/processor v0.0.0
+require (
+	internal/client v0.0.0-00010101000000-000000000000
+	internal/processor v0.0.0
+)
+
+replace internal/client => ./internal/client
 
 require golang.org/x/net v0.19.0 // indirect
 

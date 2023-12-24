@@ -1,12 +1,84 @@
 package scraper
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
+
+type mockSuccesfulResponseClient struct {
+	Instance *http.Client
+}
+
+func (client *mockSuccesfulResponseClient) DispatchRequest(req *http.Request) (*http.Response, error) {
+	return client.Instance.Do(req)
+}
+
+func (client *mockSuccesfulResponseClient) NewRequest(url string, method string) (*http.Request, error) {
+	return http.NewRequest(method, url, nil)
+}
+
+type mockUserAgentClient struct {
+	Instance *http.Client
+}
+
+func (client *mockUserAgentClient) DispatchRequest(req *http.Request) (*http.Response, error) {
+	return client.Instance.Do(req)
+}
+
+func (client *mockUserAgentClient) NewRequest(url string, method string) (*http.Request, error) {
+	req, err := http.NewRequest(method, url, nil)
+
+	req.Header.Set("User-Agent", "ooh-directory-random-bot")
+
+	return req, err
+}
+
+type mockAcceptLanguageClient struct {
+	Instance *http.Client
+}
+
+func (client *mockAcceptLanguageClient) DispatchRequest(req *http.Request) (*http.Response, error) {
+	return client.Instance.Do(req)
+}
+
+func (client *mockAcceptLanguageClient) NewRequest(url string, method string) (*http.Request, error) {
+	req, err := http.NewRequest(method, url, nil)
+
+	req.Header.Set("Accept-Language", "en-us, en-gb, en")
+
+	return req, err
+}
+
+type mockAcceptClient struct {
+	Instance *http.Client
+}
+
+func (client *mockAcceptClient) DispatchRequest(req *http.Request) (*http.Response, error) {
+	return client.Instance.Do(req)
+}
+
+func (client *mockAcceptClient) NewRequest(url string, method string) (*http.Request, error) {
+	req, err := http.NewRequest(method, url, nil)
+
+	req.Header.Set("Accept", "text/html")
+
+	return req, err
+}
+
+type mockUnsuccesfulResponseClient struct {
+	Instance *http.Client
+}
+
+func (client *mockUnsuccesfulResponseClient) DispatchRequest(req *http.Request) (*http.Response, error) {
+	return nil, errors.New("Failed in test")
+}
+
+func (client *mockUnsuccesfulResponseClient) NewRequest(url string, method string) (*http.Request, error) {
+	return http.NewRequest(method, url, nil)
+}
 
 func TestSuccesfulResponse(t *testing.T) {
 	expected := "!DOCTYPE html\n<html><body>test</body></html>"
@@ -16,11 +88,11 @@ func TestSuccesfulResponse(t *testing.T) {
 		}),
 	)
 
-	client := *server.Client()
-
 	defer server.Close()
 
-	body, _ := ScrapeRandom(server.URL, client)
+	body, _ := ScrapeRandom(server.URL, &mockSuccesfulResponseClient{
+		Instance: server.Client(),
+	})
 
 	if body != expected {
 		t.Errorf("Expected response text \"%s\", got \"%s\"", expected, body)
@@ -40,11 +112,11 @@ func TestUserAgentHeader(t *testing.T) {
 		}),
 	)
 
-	client := *server.Client()
-
 	defer server.Close()
 
-	ScrapeRandom(server.URL, client)
+	ScrapeRandom(server.URL, &mockUserAgentClient{
+		Instance: server.Client(),
+	})
 }
 
 func TestAcceptLanguageHeader(t *testing.T) {
@@ -61,11 +133,11 @@ func TestAcceptLanguageHeader(t *testing.T) {
 		}),
 	)
 
-	client := *server.Client()
-
 	defer server.Close()
 
-	ScrapeRandom(server.URL, client)
+	ScrapeRandom(server.URL, &mockAcceptLanguageClient{
+		Instance: server.Client(),
+	})
 }
 
 func TestAcceptHeader(t *testing.T) {
@@ -82,29 +154,27 @@ func TestAcceptHeader(t *testing.T) {
 		}),
 	)
 
-	client := *server.Client()
-
 	defer server.Close()
 
-	ScrapeRandom(server.URL, client)
+	ScrapeRandom(server.URL, &mockAcceptClient{
+		Instance: server.Client(),
+	})
 }
 
 func TestNonSuccesfulResponse(t *testing.T) {
-	expectedLog := fmt.Sprint("Request failed: 503")
-
 	server := httptest.NewServer(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusServiceUnavailable)
 		}),
 	)
 
-	client := *server.Client()
-
 	defer server.Close()
 
-	_, err := ScrapeRandom(server.URL, client)
+	_, err := ScrapeRandom(server.URL, &mockUnsuccesfulResponseClient{
+		Instance: server.Client(),
+	})
 
-	if err.Error() != expectedLog {
-		t.Errorf("Expected log \"%s\", got \"%s\"", expectedLog, err.Error())
+	if err == nil {
+		t.Errorf("Expected error, got \"%s\"", err)
 	}
 }

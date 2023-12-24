@@ -1,18 +1,18 @@
 package main
 
 import (
-	"log"
-	"net/http"
+	"internal/client"
 	"internal/parser"
-	"internal/scraper"
 	"internal/processor"
+	"internal/scraper"
+	"log"
 )
 
 const URL = "https://ooh.directory/random/"
 
 func main() {
-	httpClient := http.Client{}
-	html, err := scraper.ScrapeRandom(URL, httpClient)
+	httpClient := client.CreateHttpClient()
+	html, err := scraper.ScrapeRandom(URL, &httpClient)
 
 	if err != nil {
 		log.Fatal(err)

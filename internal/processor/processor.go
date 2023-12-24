@@ -2,9 +2,9 @@ package processor
 
 import (
 	"bufio"
+	"internal/parser"
 	"os"
 	"path"
-	"internal/parser"
 )
 
 const RecordFileName = "records.txt"
