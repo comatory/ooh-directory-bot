@@ -3,25 +3,28 @@ package main
 import (
 	"log"
 	"net/http"
+	"internal/parser"
+	"internal/scraper"
+	"internal/processor"
 )
 
 const URL = "https://ooh.directory/random/"
 
 func main() {
 	httpClient := http.Client{}
-	html, err := ScrapeRandom(URL, httpClient)
+	html, err := scraper.ScrapeRandom(URL, httpClient)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	results, parseError := ParseResults(html)
+	results, parseError := parser.ParseResults(html)
 
 	if parseError != nil {
 		log.Println(parseError)
 	}
 
-	result, processError := ProcessResultForAPI(&results)
+	result, processError := processor.ProcessResultForAPI(&results)
 
 	if processError != nil {
 		log.Println(processError)

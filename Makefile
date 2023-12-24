@@ -14,7 +14,8 @@ clean:
 	rm -f ${BUILD_DIR}/*
 
 test:
-	go test
+	go test internal/parser
+	go test internal/scraper
 
 install:
 	chmod +x githooks/**
