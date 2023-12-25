@@ -24,7 +24,7 @@ func main() {
 		log.Println(parseError)
 	}
 
-	result, processError := processor.ProcessResultForAPI(&results)
+	result, processError := processor.ProcessResultForAPI(&results, &processor.FileStorage{})
 
 	if processError != nil {
 		log.Println(processError)
