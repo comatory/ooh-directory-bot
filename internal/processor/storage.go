@@ -10,27 +10,31 @@ import (
 const RecordFileName = "records.txt"
 
 type Storage interface {
-	getRecord() (*os.File, error)
-	storeRecord(result *parser.Result, file *os.File) error
-	filterOutPreviousResults(results *[]parser.Result, file *os.File) []parser.Result
+	GetRecord() (*os.File, error)
+	ReadRecord(file *os.File) *bufio.Scanner
+	StoreRecord(result *parser.Result, file *os.File) error
+	FilterOutPreviousResults(results *[]parser.Result, scanner *bufio.Scanner) []parser.Result
 }
 
 type FileStorage struct {}
 
-func (*FileStorage) getRecord() (*os.File, error) {
+func (*FileStorage) GetRecord() (*os.File, error) {
 	path := path.Join(".", RecordFileName)
 
 	return os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 }
 
-func (*FileStorage) storeRecord(result *parser.Result, file *os.File) error {
+func (*FileStorage) ReadRecord(file *os.File) *bufio.Scanner {
+	return bufio.NewScanner(file)
+}
+
+func (*FileStorage) StoreRecord(result *parser.Result, file *os.File) error {
 	_, err := file.WriteString(result.Url + "\n")
 
 	return err
 }
 
-func (*FileStorage) filterOutPreviousResults(results *[]parser.Result, file *os.File) []parser.Result {
-	scanner := bufio.NewScanner(file)
+func (*FileStorage) FilterOutPreviousResults(results *[]parser.Result, scanner *bufio.Scanner) []parser.Result {
 	list := make([]parser.Result, len(*results))
 
 	copy(list, *results)

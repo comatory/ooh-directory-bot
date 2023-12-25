@@ -12,7 +12,7 @@ func (*ResultNotFoundError) Error() string {
 
 
 func ProcessResultForAPI(results *[]parser.Result, storage Storage) (*parser.Result, error) {
-	file, fileError := storage.getRecord()
+	file, fileError := storage.GetRecord()
 
 	defer file.Close()
 
@@ -21,7 +21,9 @@ func ProcessResultForAPI(results *[]parser.Result, storage Storage) (*parser.Res
 		return &empty, fileError
 	}
 
-	filteredResults := storage.filterOutPreviousResults(results, file)
+	scanner := storage.ReadRecord(file)
+
+	filteredResults := storage.FilterOutPreviousResults(results, scanner)
 
 	if len(filteredResults) == 0 {
 		empty := parser.NewEmptyResult()
@@ -31,7 +33,7 @@ func ProcessResultForAPI(results *[]parser.Result, storage Storage) (*parser.Res
 	firstResult := filteredResults[0]
 
 	// TODO: This should be moved when bot succesfully posts to API
-	storeError := storage.storeRecord(&firstResult, file)
+	storeError := storage.StoreRecord(&firstResult, file)
 
 	if storeError != nil {
 		return &firstResult, storeError
