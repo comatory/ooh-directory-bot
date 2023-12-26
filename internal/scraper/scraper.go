@@ -17,7 +17,11 @@ func readResponseBody(res *http.Response) (string, error) {
 }
 
 func ScrapeRandom(url string, client client.HttpClient) (string, error) {
-	req, prepareErr := client.NewRequest(url, http.MethodGet)
+	requestConfig := client.
+		NewRequestBuilder(url).
+		Header("Accept-Language", "en-us, en-gb, en").
+		Header("Accept", "text/html")
+	req, prepareErr := requestConfig.Build()
 
 	if prepareErr != nil {
 		return "", prepareErr

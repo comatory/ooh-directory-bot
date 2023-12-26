@@ -12,7 +12,7 @@ replace internal/scraper => ./internal/scraper
 
 require (
 	internal/bot v0.0.0-00010101000000-000000000000
-	internal/client v0.0.0-00010101000000-000000000000
+	internal/client v0.0.0
 	internal/processor v0.0.0
 )
 

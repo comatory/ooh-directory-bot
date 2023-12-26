@@ -6,30 +6,37 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"internal/client"
 )
 
 type mockSuccesfulResponseClient struct {
 	Instance *http.Client
 }
 
-func (client *mockSuccesfulResponseClient) DispatchRequest(req *http.Request) (*http.Response, error) {
-	return client.Instance.Do(req)
+func (mockClient *mockSuccesfulResponseClient) DispatchRequest(req *http.Request) (*http.Response, error) {
+	return mockClient.Instance.Do(req)
 }
 
-func (client *mockSuccesfulResponseClient) NewRequest(url string, method string) (*http.Request, error) {
-	return http.NewRequest(method, url, nil)
+func (*mockSuccesfulResponseClient) NewRequestBuilder(url string) *client.RequestBuilder {
+	builder := client.RequestBuilder{}
+	builder.New(url)
+
+	return &builder
 }
 
 type mockUnsuccesfulResponseClient struct {
 	Instance *http.Client
 }
 
-func (client *mockUnsuccesfulResponseClient) DispatchRequest(req *http.Request) (*http.Response, error) {
+func (*mockUnsuccesfulResponseClient) DispatchRequest(req *http.Request) (*http.Response, error) {
 	return nil, errors.New("Failed in test")
 }
 
-func (client *mockUnsuccesfulResponseClient) NewRequest(url string, method string) (*http.Request, error) {
-	return http.NewRequest(method, url, nil)
+func (*mockUnsuccesfulResponseClient) NewRequestBuilder(url string) *client.RequestBuilder {
+	builder := client.RequestBuilder{}
+	builder.New(url)
+
+	return &builder
 }
 
 func TestSuccesfulScrapeResponse(t *testing.T) {

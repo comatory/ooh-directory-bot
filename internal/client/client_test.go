@@ -16,24 +16,12 @@ func (client *mockSuccesfulResponseClient) DispatchRequest(req *http.Request) (*
 	return client.Instance.Do(req)
 }
 
-func (client *mockSuccesfulResponseClient) NewRequest(url string, method string) (*http.Request, error) {
-	return http.NewRequest(method, url, nil)
-}
-
 type mockUserAgentClient struct {
 	Instance *http.Client
 }
 
 func (client *mockUserAgentClient) DispatchRequest(req *http.Request) (*http.Response, error) {
 	return client.Instance.Do(req)
-}
-
-func (client *mockUserAgentClient) NewRequest(url string, method string) (*http.Request, error) {
-	req, err := http.NewRequest(method, url, nil)
-
-	req.Header.Set("User-Agent", "ooh-directory-random-bot")
-
-	return req, err
 }
 
 type mockAcceptLanguageClient struct {
@@ -44,14 +32,6 @@ func (client *mockAcceptLanguageClient) DispatchRequest(req *http.Request) (*htt
 	return client.Instance.Do(req)
 }
 
-func (client *mockAcceptLanguageClient) NewRequest(url string, method string) (*http.Request, error) {
-	req, err := http.NewRequest(method, url, nil)
-
-	req.Header.Set("Accept-Language", "en-us, en-gb, en")
-
-	return req, err
-}
-
 type mockAcceptClient struct {
 	Instance *http.Client
 }
@@ -60,24 +40,12 @@ func (client *mockAcceptClient) DispatchRequest(req *http.Request) (*http.Respon
 	return client.Instance.Do(req)
 }
 
-func (client *mockAcceptClient) NewRequest(url string, method string) (*http.Request, error) {
-	req, err := http.NewRequest(method, url, nil)
-
-	req.Header.Set("Accept", "text/html")
-
-	return req, err
-}
-
 type mockUnsuccesfulResponseClient struct {
 	Instance *http.Client
 }
 
 func (client *mockUnsuccesfulResponseClient) DispatchRequest(req *http.Request) (*http.Response, error) {
 	return nil, errors.New("Failed in test")
-}
-
-func (client *mockUnsuccesfulResponseClient) NewRequest(url string, method string) (*http.Request, error) {
-	return http.NewRequest(method, url, nil)
 }
 
 func createMockClient(instance *http.Client) Client {
@@ -97,7 +65,8 @@ func TestSuccesfulResponse(t *testing.T) {
 	defer server.Close()
 
 	client := createMockClient(server.Client())
-	req, _ := client.NewRequest(server.URL, http.MethodGet)
+	reqConfig := client.NewRequestBuilder(server.URL)
+	req, _ := reqConfig.Build()
 
 	res, _ := client.DispatchRequest(req)
 
@@ -119,7 +88,8 @@ func TestNonSuccesfulResponse(t *testing.T) {
 	defer server.Close()
 
 	client := createMockClient(server.Client())
-	req, _ := client.NewRequest(server.URL, http.MethodGet)
+	reqConfig := client.NewRequestBuilder(server.URL)
+	req, _ := reqConfig.Build()
 
 	_, err := client.DispatchRequest(req)
 
@@ -139,7 +109,8 @@ func TestUserAgentHeader(t *testing.T) {
 	defer server.Close()
 
 	client := createMockClient(server.Client())
-	req, _ := client.NewRequest(server.URL, http.MethodGet)
+	reqConfig := client.NewRequestBuilder(server.URL).Header("User-Agent", expectedUserAgent)
+	req, _ := reqConfig.Build()
 
 	if req.Header.Get("User-Agent") != expectedUserAgent {
 		t.Errorf("Expected user agent header \"%s\", got \"%s\"", expectedUserAgent, req.Header.Get("User-Agent"))
@@ -158,7 +129,8 @@ func TestAcceptLanguageHeader(t *testing.T) {
 	defer server.Close()
 
 	client := createMockClient(server.Client())
-	req, _ := client.NewRequest(server.URL, http.MethodGet)
+	reqConfig := client.NewRequestBuilder(server.URL).Header("Accept-Language", expectedAcceptLanguage)
+	req, _ := reqConfig.Build()
 
 	if req.Header.Get("Accept-Language") != expectedAcceptLanguage {
 		t.Errorf("Expected accept language header \"%s\", got \"%s\"", expectedAcceptLanguage, req.Header.Get("Accept-Language"))
@@ -177,7 +149,8 @@ func TestAcceptHeader(t *testing.T) {
 	defer server.Close()
 
 	client := createMockClient(server.Client())
-	req, _ := client.NewRequest(server.URL, http.MethodGet)
+	reqConfig := client.NewRequestBuilder(server.URL).Header("Accept", expectedAccept)
+	req, _ := reqConfig.Build()
 
 	if req.Header.Get("Accept") != expectedAccept {
 		t.Errorf("Expected accept header \"%s\", got \"%s\"", expectedAccept, req.Header.Get("Accept"))

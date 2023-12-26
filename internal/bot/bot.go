@@ -14,14 +14,6 @@ type Payload struct {
 	Status string `json:"status"`
 }
 
-func addAuthorization(req *http.Request, config *Config) {
-	req.Header.Set("Authorization", "Bearer "+config.AccessToken)
-}
-
-func addJsonContentType(req *http.Request) {
-	req.Header.Set("Content-Type", "application/json")
-}
-
 func createPayload(result *parser.Result) (*bytes.Buffer, error) {
 	status := result.Url + " " + result.Title
 
@@ -53,10 +45,14 @@ func PostResult(result *parser.Result, config *Config, client *client.Client) er
 		return payloadErr
 	}
 
-	req, prepareErr := client.NewRequestWithBody(config.BotServerUrl+endpoint, http.MethodPost, payload)
-
-	addAuthorization(req, config)
-	addJsonContentType(req)
+	requestConfig := client.
+		NewRequestBuilder(config.BotServerUrl+endpoint).
+		Method(http.MethodPost).
+		Header("Accept", "application/json").
+		Header("Authorization", "Bearer "+config.AccessToken).
+		Header("Content-Type", "application/json").
+		Body(payload)
+	req, prepareErr := requestConfig.Build()
 
 	if prepareErr != nil {
 		return prepareErr
