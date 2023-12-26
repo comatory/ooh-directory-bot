@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"fmt"
+	"os"
 	"internal/bot"
 	"internal/client"
 	"internal/parser"
@@ -13,6 +14,8 @@ import (
 const URL = "https://ooh.directory/random/"
 
 func main() {
+	log.SetOutput(os.Stdout)
+
 	log.Println("Starting bot")
 
 	botConfig, botConfigError := bot.ReadConfiguration()

@@ -12,6 +12,8 @@ Running the binary will then scrape the site and post to given bot's server URL 
 
 The frequency of posting depends on how often you run the binary, use scheduler such as `cron` to set it up.
 
+Logs are streamed to `stdout` so you can pipe them to a file if you want to.
+
 ## Build
 
 Run `make build` to obtain binaries for Windows/Linux/macOS. They will be in `outputs/` directory.
