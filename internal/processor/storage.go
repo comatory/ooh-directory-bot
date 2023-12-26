@@ -10,26 +10,45 @@ import (
 const RecordFileName = "records.txt"
 
 type Storage interface {
-	GetRecord() (*os.File, error)
-	ReadRecord(file *os.File) *bufio.Scanner
-	StoreRecord(result *parser.Result, file *os.File) error
+	Load() error
+	GetFile() *os.File
+	Close() error
+	ReadRecord() *bufio.Scanner
+	StoreRecord(result *parser.Result) error
 	FilterOutPreviousResults(results *[]parser.Result, scanner *bufio.Scanner) []parser.Result
 }
 
-type FileStorage struct{}
+type FileStorage struct{
+	file *os.File
+}
 
-func (*FileStorage) GetRecord() (*os.File, error) {
+func (storage *FileStorage) Load() error {
 	path := path.Join(".", RecordFileName)
+	file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
-	return os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+
+	storage.file = file
+
+	return nil
 }
 
-func (*FileStorage) ReadRecord(file *os.File) *bufio.Scanner {
-	return bufio.NewScanner(file)
+func (storage *FileStorage) GetFile() *os.File {
+	return storage.file
 }
 
-func (*FileStorage) StoreRecord(result *parser.Result, file *os.File) error {
-	_, err := file.WriteString(result.Url + "\n")
+func (storage *FileStorage) Close() error {
+	return storage.file.Close()
+}
+
+func (storage *FileStorage) ReadRecord() *bufio.Scanner {
+	return bufio.NewScanner(storage.file)
+}
+
+func (storage *FileStorage) StoreRecord(result *parser.Result) error {
+	_, err := storage.file.WriteString(result.Url + "\n")
 
 	return err
 }

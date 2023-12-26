@@ -27,6 +27,16 @@ func main() {
 	log.Println("Configuration loaded OK")
 
 	httpClient := client.CreateHttpClient()
+	fileStorage := processor.FileStorage{}
+
+	loadError := fileStorage.Load()
+
+	defer fileStorage.Close()
+
+	if loadError != nil {
+		log.Fatal(loadError)
+	}
+
 	html, err := scraper.ScrapeRandom(URL, &httpClient)
 
 	if err != nil {
@@ -40,7 +50,7 @@ func main() {
 		log.Println(parseError)
 	}
 
-	result, processError := processor.ProcessResultForAPI(&results, &processor.FileStorage{})
+	result, processError := processor.ProcessResultForAPI(&results, &fileStorage)
 
 	if processError != nil {
 		log.Println(processError)
@@ -52,6 +62,12 @@ func main() {
 
 	if postError != nil {
 		log.Fatal(postError)
+	}
+
+	storeError := fileStorage.StoreRecord(result)
+
+	if storeError != nil {
+		log.Panic(storeError)
 	}
 
 	log.Println("Bot finished")
