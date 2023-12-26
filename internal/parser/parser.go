@@ -39,6 +39,15 @@ func NewEmptyResult() Result {
 	}
 }
 
+func (this *Result) FormatUpdatedAt() string {
+	if !this.HasUpdatedAt() {
+		return ""
+	}
+
+	return time.Unix(this.UpdatedAt, 0).Format("Feb 01 2006")
+
+}
+
 func hasClass(attributes *[]html.Attribute, name string) bool {
 	for _, attr := range *attributes {
 		if attr.Key == "class" && attr.Val == name {

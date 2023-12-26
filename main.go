@@ -1,6 +1,7 @@
 package main
 
 import (
+	"internal/bot"
 	"internal/client"
 	"internal/parser"
 	"internal/processor"
@@ -11,6 +12,12 @@ import (
 const URL = "https://ooh.directory/random/"
 
 func main() {
+	botConfig, botConfigError := bot.ReadConfiguration()
+
+	if botConfigError != nil {
+		log.Fatal(botConfigError)
+	}
+
 	httpClient := client.CreateHttpClient()
 	html, err := scraper.ScrapeRandom(URL, &httpClient)
 
@@ -30,5 +37,9 @@ func main() {
 		log.Println(processError)
 	}
 
-	log.Print(result)
+	postError := bot.PostResult(result, &botConfig, &httpClient)
+
+	if postError != nil {
+		log.Fatal(postError)
+	}
 }

@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -21,6 +22,12 @@ func CreateHttpClient() Client {
 	}
 }
 
+func addRequiredHeaders(req *http.Request) {
+	req.Header.Set("User-Agent", "ooh-directory-random-bot")
+	req.Header.Set("Accept-Language", "en-us, en-gb, en")
+	req.Header.Set("Accept", "text/html")
+}
+
 func (*Client) NewRequest(url string, method string) (*http.Request, error) {
 	req, err := http.NewRequest(method, url, nil)
 
@@ -28,9 +35,19 @@ func (*Client) NewRequest(url string, method string) (*http.Request, error) {
 		return nil, err
 	}
 
-	req.Header.Set("User-Agent", "ooh-directory-random-bot")
-	req.Header.Set("Accept-Language", "en-us, en-gb, en")
-	req.Header.Set("Accept", "text/html")
+	addRequiredHeaders(req)
+
+	return req, nil
+}
+
+func (*Client) NewRequestWithBody(url string, method string, body io.Reader) (*http.Request, error) {
+	req, err := http.NewRequest(method, url, body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	addRequiredHeaders(req)
 
 	return req, nil
 }

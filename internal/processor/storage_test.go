@@ -1,11 +1,11 @@
 package processor
 
 import (
+	"bufio"
+	"internal/parser"
+	"io"
 	"testing"
 	"testing/fstest"
-	"bufio"
-	"io"
-	"internal/parser"
 )
 
 func TestWithNoPreviousResultsInStorage(t *testing.T) {
@@ -68,6 +68,6 @@ func TestWithPreviousResultsInStorage(t *testing.T) {
 	}
 
 	if filteredResults[1].Url != "https://ooh.directory/random/3" {
-	  t.Errorf("Expected \"%s\" result, got \"%s\"", "https://ooh.directory/random/3", filteredResults[1].Url)
+		t.Errorf("Expected \"%s\" result, got \"%s\"", "https://ooh.directory/random/3", filteredResults[1].Url)
 	}
 }

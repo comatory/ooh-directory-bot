@@ -1,10 +1,10 @@
 package processor
 
 import (
-	"os"
-	"path"
 	"bufio"
 	"internal/parser"
+	"os"
+	"path"
 )
 
 const RecordFileName = "records.txt"
@@ -16,7 +16,7 @@ type Storage interface {
 	FilterOutPreviousResults(results *[]parser.Result, scanner *bufio.Scanner) []parser.Result
 }
 
-type FileStorage struct {}
+type FileStorage struct{}
 
 func (*FileStorage) GetRecord() (*os.File, error) {
 	path := path.Join(".", RecordFileName)

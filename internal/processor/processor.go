@@ -10,7 +10,6 @@ func (*ResultNotFoundError) Error() string {
 	return "Result was not selected"
 }
 
-
 func ProcessResultForAPI(results *[]parser.Result, storage Storage) (*parser.Result, error) {
 	file, fileError := storage.GetRecord()
 
