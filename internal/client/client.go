@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"log"
 	"io"
 	"net/http"
 )
@@ -23,6 +24,7 @@ func CreateHttpClient() Client {
 }
 
 func (client *Client) DispatchRequest(req *http.Request) (*http.Response, error) {
+	log.Println(fmt.Sprintf("Request %s %s", req.Method, req.URL.String()))
 	res, err := client.Instance.Do(req)
 
 	if err != nil {
