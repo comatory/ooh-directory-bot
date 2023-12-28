@@ -1,5 +1,7 @@
 # ooh-directory-bot
 
+![logo for the bot depicting robot's head with surprised look](./assets/avatar.png)
+
 Mastodon bot which posts a single random post from [ooh.directory](https://ooh.directory).
 
 ## Usage
