@@ -1,8 +1,9 @@
 # ooh-directory-bot
 
-![logo for the bot depicting robot's head with surprised look](./assets/avatar.png)
+<img alt="logo for the bot depicting robot's head with surprised look" src="./assets/avatar.png" width="200" height="auto" />
 
 Mastodon bot which posts a single random post from [ooh.directory](https://ooh.directory).
+See the bot in action on [botsin.space instance](https://botsin.space/@ooh_directory_bot).
 
 ## Usage
 
