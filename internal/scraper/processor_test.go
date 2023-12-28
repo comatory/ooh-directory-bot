@@ -1,4 +1,4 @@
-package processor
+package scraper
 
 import (
 	"os"
@@ -7,6 +7,7 @@ import (
 	"testing/fstest"
 	"bufio"
 	"internal/parser"
+	"internal/storage"
 )
 
 func getMockRecordsUrls(records *[]parser.Result) []byte {
@@ -59,7 +60,7 @@ func (*mockStorage) Close() error {
 }
 
 func (*mockStorage) FilterOutPreviousResults(results *[]parser.Result, scanner *bufio.Scanner) []parser.Result {
-	s := FileStorage{}
+	s := storage.FileStorage{}
 	return s.FilterOutPreviousResults(results, scanner)
 }
 

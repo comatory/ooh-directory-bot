@@ -1,4 +1,4 @@
-package processor
+package storage
 
 import (
 	"bufio"

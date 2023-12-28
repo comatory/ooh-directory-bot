@@ -7,8 +7,8 @@ import (
 	"internal/bot"
 	"internal/client"
 	"internal/parser"
-	"internal/processor"
 	"internal/scraper"
+	"internal/storage"
 )
 
 const URL = "https://ooh.directory/random/"
@@ -27,7 +27,7 @@ func main() {
 	log.Println("Configuration loaded OK")
 
 	httpClient := client.CreateHttpClient()
-	fileStorage := processor.FileStorage{}
+	fileStorage := storage.FileStorage{}
 
 	loadError := fileStorage.Load()
 
@@ -50,7 +50,7 @@ func main() {
 		log.Println(parseError)
 	}
 
-	result, processError := processor.ProcessResultForAPI(&results, &fileStorage)
+	result, processError := scraper.ProcessResultForAPI(&results, &fileStorage)
 
 	if processError != nil {
 		log.Println(processError)

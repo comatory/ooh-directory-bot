@@ -16,8 +16,8 @@ clean:
 test:
 	go test internal/client
 	go test internal/parser
-	go test internal/processor
 	go test internal/scraper
+	go test internal/storage
 
 install:
 	chmod +x githooks/**
