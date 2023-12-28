@@ -14,10 +14,11 @@ clean:
 	rm -f ${BUILD_DIR}/*
 
 test:
-	go test internal/client
-	go test internal/parser
-	go test internal/scraper
-	go test internal/storage
+	go test -v internal/bot
+	go test -v internal/client
+	go test -v internal/parser
+	go test -v internal/scraper
+	go test -v internal/storage
 
 install:
 	chmod +x githooks/**

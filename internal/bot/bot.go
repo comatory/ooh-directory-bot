@@ -38,7 +38,7 @@ func createPayload(result *parser.Result) (*bytes.Buffer, error) {
 	return bytes.NewBuffer(jsonValue), nil
 }
 
-func PostResult(result *parser.Result, config *Config, client *client.Client) error {
+func PostResult(result *parser.Result, config *Config, client client.HttpClient) error {
 	payload, payloadErr := createPayload(result)
 
 	if payloadErr != nil {
