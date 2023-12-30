@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+const userAgent = "Mozilla/5.0; ooh-directory-random-bot; +https://github.com/comatory/ooh-directory-bot"
+
 type HttpClient interface {
 	DispatchRequest(req *http.Request) (*http.Response, error)
 	NewRequestBuilder(url string) *RequestBuilder
@@ -56,7 +58,7 @@ func (builder *RequestBuilder) New(url string) *RequestBuilder {
 	builder.method = http.MethodGet
 	builder.body = nil
 	builder.headers = make(map[string]string)
-	builder.headers["User-Agent"] = "ooh-directory-random-bot"
+	builder.headers["User-Agent"] = userAgent
 
 	return builder
 }

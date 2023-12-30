@@ -1,52 +1,11 @@
 package client
 
 import (
-	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
-
-type mockSuccesfulResponseClient struct {
-	Instance *http.Client
-}
-
-func (client *mockSuccesfulResponseClient) DispatchRequest(req *http.Request) (*http.Response, error) {
-	return client.Instance.Do(req)
-}
-
-type mockUserAgentClient struct {
-	Instance *http.Client
-}
-
-func (client *mockUserAgentClient) DispatchRequest(req *http.Request) (*http.Response, error) {
-	return client.Instance.Do(req)
-}
-
-type mockAcceptLanguageClient struct {
-	Instance *http.Client
-}
-
-func (client *mockAcceptLanguageClient) DispatchRequest(req *http.Request) (*http.Response, error) {
-	return client.Instance.Do(req)
-}
-
-type mockAcceptClient struct {
-	Instance *http.Client
-}
-
-func (client *mockAcceptClient) DispatchRequest(req *http.Request) (*http.Response, error) {
-	return client.Instance.Do(req)
-}
-
-type mockUnsuccesfulResponseClient struct {
-	Instance *http.Client
-}
-
-func (client *mockUnsuccesfulResponseClient) DispatchRequest(req *http.Request) (*http.Response, error) {
-	return nil, errors.New("Failed in test")
-}
 
 func createMockClient(instance *http.Client) Client {
 	return Client{
