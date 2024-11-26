@@ -1,6 +1,6 @@
 module comatory/ooh-directory-bot
 
-go 1.21.5
+go 1.23.2
 
 require internal/parser v0.0.0
 
