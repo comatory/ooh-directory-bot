@@ -1,24 +1,37 @@
 package main
 
 import (
-	"log"
+	"flag"
 	"fmt"
-	"os"
 	"internal/bot"
 	"internal/client"
 	"internal/parser"
 	"internal/scraper"
 	"internal/storage"
+	"log"
+	"os"
 )
 
 const URL = "https://ooh.directory/random/"
+
+type Flags struct {
+	configFilePath  *string
+	recordsFilePath *string
+}
 
 func main() {
 	log.SetOutput(os.Stdout)
 
 	log.Println("Starting bot")
 
-	botConfig, botConfigError := bot.ReadConfiguration()
+	flags := &Flags{
+		configFilePath:  flag.String("config-file", "", "Path to the configuration file"),
+		recordsFilePath: flag.String("records-file", "", "Path to the records file"),
+	}
+
+  flag.Parse()
+
+	botConfig, botConfigError := bot.ReadConfiguration(flags.configFilePath)
 
 	if botConfigError != nil {
 		log.Fatal(botConfigError)
@@ -29,7 +42,7 @@ func main() {
 	httpClient := client.CreateHttpClient()
 	fileStorage := storage.FileStorage{}
 
-	loadError := fileStorage.Load()
+	loadError := fileStorage.Load(flags.recordsFilePath)
 
 	defer fileStorage.Close()
 

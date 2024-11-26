@@ -1,3 +1,5 @@
 output/**/*
 records.txt
+data/*
+!data/.gitkeep
 .env

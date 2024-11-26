@@ -18,11 +18,18 @@ func isValidConfig(config *Config) bool {
 	return config.AccessToken != "" && config.BotServerUrl != ""
 }
 
-func ReadConfiguration() (Config, error) {
+func ReadConfiguration(configFilePath *string) (Config, error) {
 	config := Config{}
 
-	path := path.Join(".", configFileName)
-	contents, err := os.ReadFile(path)
+	var filePath string
+
+	if *configFilePath != "" {
+		filePath = *configFilePath
+	} else {
+		filePath = path.Join(".", configFileName)
+	}
+
+	contents, err := os.ReadFile(filePath)
 
 	if err != nil {
 		return config, err

@@ -2,15 +2,15 @@ package storage
 
 import (
 	"bufio"
+	"internal/parser"
 	"os"
 	"path"
-	"internal/parser"
 )
 
 const RecordFileName = "records.txt"
 
 type Storage interface {
-	Load() error
+	Load(recordFilePath *string) error
 	GetFile() *os.File
 	Close() error
 	ReadRecord() *bufio.Scanner
@@ -18,13 +18,19 @@ type Storage interface {
 	FilterOutPreviousResults(results *[]parser.Result, scanner *bufio.Scanner) []parser.Result
 }
 
-type FileStorage struct{
+type FileStorage struct {
 	file *os.File
 }
 
-func (storage *FileStorage) Load() error {
-	path := path.Join(".", RecordFileName)
-	file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+func (storage *FileStorage) Load(recordFilePath *string) error {
+	var filePath string
+	if *recordFilePath != "" {
+		filePath = *recordFilePath
+	} else {
+		filePath = path.Join(".", RecordFileName)
+	}
+
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 	if err != nil {
 		return err
