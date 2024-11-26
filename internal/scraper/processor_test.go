@@ -25,7 +25,7 @@ type mockStorage struct {
 	file fs.File
 }
 
-func (storage *mockStorage) Load() error {
+func (storage *mockStorage) Load(recordFilePath *string) error {
 	fs := fstest.MapFS{
 		"test.txt": {
 			Data: getMockRecordsUrls(&storage.MockRecords),
@@ -77,7 +77,7 @@ func TestProcessorWithFirstResult(t *testing.T) {
 	storage := mockStorage{
 		MockRecords: make([]parser.Result, 0),
 	}
-	storage.Load()
+	storage.Load(nil)
 
 	result, _ := ProcessResultForAPI(&results, &storage)
 
@@ -105,7 +105,7 @@ func TestProcessorWithFilteredOutResult(t *testing.T) {
 	storage := mockStorage{
 		MockRecords: mockRecords,
 	}
-	storage.Load()
+	storage.Load(nil)
 
 	result, _ := ProcessResultForAPI(&results, &storage)
 
@@ -130,7 +130,7 @@ func TestProcessorWithoutAnyResult(t *testing.T) {
 	storage := mockStorage{
 		MockRecords: mockRecords,
 	}
-	storage.Load()
+	storage.Load(nil)
 
 	_, err := ProcessResultForAPI(&results, &storage)
 

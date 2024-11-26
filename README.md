@@ -9,13 +9,13 @@ See the bot in action on [botsin.space instance](https://botsin.space/@ooh_direc
 
 ### Pre-requisities
 
-Create `.env` configuration file next to binary. You can also create this file by copying `.env.example` to `.env` file from the source.
+Create `.env` configuration file next to binary. You can also create this file by copying `.env.example` to `.env` file from the source. The location to this configuration file can be changed with flag `--config-file`.
 
 This configuration file must contain `access_token` (obtained from your server's application dashboard) and `bot_server_url`, which is the URL of the server, e.g. `https://botsin.space`.
 
 ### Run
 
-Running the binary will then scrape the site and post to given bot's server URL `statuses` endpoint. The application keeps track of posted URLs in text file `records.txt` which will be written in binary's location.
+Running the binary will then scrape the site and post to given bot's server URL `statuses` endpoint. The application keeps track of posted URLs in text file `records.txt` which will be written in binary's location (otherwise configurable with `--records-file` flag).
 
 The frequency of posting depends on how often you run the binary, use scheduler such as `cron` to set it up.
 
@@ -32,3 +32,23 @@ Run `make test` to run the test suites.
 ## Development
 
 Run `make install` to copy pre-commit hook for formatting.
+
+## Deployment
+
+It is recommended to use Docker. The included `Dockerfile` compiles the binary and runs it via cron, so need to set it up. **The interval is hard-coded** and will run the bot daily at 10 AM.
+
+The docker setup assumes that you have folder `data/` in the same directory as the Dockerfile. This folder will contain `records.txt` file, you can also move existing one there. You also **must have** environment file placed in there and output log will be streamed to this folder as well.
+
+Build the image first:
+
+```bash
+$ docker build -t ooh-directory-bot .
+```
+
+Then run the container (recommended settings for server-like environment):
+
+```bash
+$ docker run -d --restart=always --rm -v=$(pwd)/data/:/app/data/ ooh-directory-bot
+```
+
+The downside of running the container this way with `cron` is that you won't be able to stop it with `CTRL+C` outside of daemon mode, you must stop the container with `docker stop <container_id>`.

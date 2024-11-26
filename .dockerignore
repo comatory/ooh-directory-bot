@@ -1,0 +1,6 @@
+assets/
+githooks/
+output/
+.env
+records.txt
+log.txt
