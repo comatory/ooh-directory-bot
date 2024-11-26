@@ -35,7 +35,7 @@ Run `make install` to copy pre-commit hook for formatting.
 
 ## Deployment
 
-It is recommended to use Docker. The included `Dockerfile` compiles the binary and runs it via cron, so need to set it up.
+It is recommended to use Docker. The included `Dockerfile` compiles the binary and runs it via cron, so need to set it up. **The interval is hard-coded** and will run the bot daily at 10 AM.
 
 The docker setup assumes that you have folder `data/` in the same directory as the Dockerfile. This folder will contain `records.txt` file, you can also move existing one there. You also **must have** environment file placed in there and output log will be streamed to this folder as well.
 
@@ -45,8 +45,10 @@ Build the image first:
 $ docker build -t ooh-directory-bot .
 ```
 
-Then run the container:
+Then run the container (recommended settings for server-like environment):
 
 ```bash
-$ docker run --restart=always --rm -v=$(pwd)/data/:/app/data/ ooh-directory-bot
+$ docker run -d --restart=always --rm -v=$(pwd)/data/:/app/data/ ooh-directory-bot
 ```
+
+The downside of running the container this way with `cron` is that you won't be able to stop it with `CTRL+C` outside of daemon mode, you must stop the container with `docker stop <container_id>`.
