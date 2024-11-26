@@ -1,6 +1,6 @@
 module comatory/ooh-directory-bot
 
-go 1.21.5
+go 1.23.2
 
 require internal/parser v0.0.0
 
@@ -18,7 +18,7 @@ require (
 
 replace internal/client => ./internal/client
 
-require golang.org/x/net v0.19.0 // indirect
+require golang.org/x/net v0.31.0 // indirect
 
 replace internal/storage => ./internal/storage
 
