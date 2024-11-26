@@ -18,7 +18,7 @@ require (
 
 replace internal/client => ./internal/client
 
-require golang.org/x/net v0.19.0 // indirect
+require golang.org/x/net v0.31.0 // indirect
 
 replace internal/storage => ./internal/storage
 
