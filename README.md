@@ -48,7 +48,7 @@ $ docker build -t ooh-directory-bot .
 Then run the container (recommended settings for server-like environment):
 
 ```bash
-$ docker run -d --restart=always --rm -v=$(pwd)/data/:/app/data/ ooh-directory-bot
+$ docker run -d --restart always -v $(pwd)/data/:/app/data/ ooh-directory-bot
 ```
 
 The downside of running the container this way with `cron` is that you won't be able to stop it with `CTRL+C` outside of daemon mode, you must stop the container with `docker stop <container_id>`.
