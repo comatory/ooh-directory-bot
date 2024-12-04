@@ -14,7 +14,11 @@ type Payload struct {
 	Status string `json:"status"`
 }
 
-func createPayload(result *parser.Result) (*bytes.Buffer, error) {
+type PayloadOptions struct {
+	Tags []string
+}
+
+func createPayload(result *parser.Result, options *PayloadOptions) (*bytes.Buffer, error) {
 	status := result.Url + " " + result.Title
 
 	if result.HasAuthorName() {
@@ -24,6 +28,12 @@ func createPayload(result *parser.Result) (*bytes.Buffer, error) {
 			status += ", " + result.FormatUpdatedAt() + ")"
 		} else {
 			status += ")"
+		}
+	}
+
+	if len(options.Tags) > 0 {
+		for _, tag := range options.Tags {
+			status += " #" + tag
 		}
 	}
 
@@ -38,8 +48,8 @@ func createPayload(result *parser.Result) (*bytes.Buffer, error) {
 	return bytes.NewBuffer(jsonValue), nil
 }
 
-func PostResult(result *parser.Result, config *Config, client client.HttpClient) error {
-	payload, payloadErr := createPayload(result)
+func PostResult(result *parser.Result, config *Config, client client.HttpClient, options *PayloadOptions) error {
+	payload, payloadErr := createPayload(result, options)
 
 	if payloadErr != nil {
 		return payloadErr

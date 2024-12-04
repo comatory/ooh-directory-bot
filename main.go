@@ -10,6 +10,7 @@ import (
 	"internal/storage"
 	"log"
 	"os"
+	"strings"
 )
 
 const URL = "https://ooh.directory/random/"
@@ -17,19 +18,43 @@ const URL = "https://ooh.directory/random/"
 type Flags struct {
 	configFilePath  *string
 	recordsFilePath *string
+	tags            []string
+	help            *bool
+}
+
+func extractTags(rawTags string) []string {
+	var tags []string
+	for _, rawTag := range strings.Split(rawTags, ",") {
+		tag := strings.TrimSpace(rawTag)
+		tags = append(tags, tag)
+	}
+
+	return tags
 }
 
 func main() {
 	log.SetOutput(os.Stdout)
 
-	log.Println("Starting bot")
+  rawTags := flag.String("tags", "", "Tags to add to the post (optional)")
 
 	flags := &Flags{
 		configFilePath:  flag.String("config-file", "", "Path to the configuration file"),
 		recordsFilePath: flag.String("records-file", "", "Path to the records file"),
+    help:            flag.Bool("help", false, "Show help"),
 	}
 
-  flag.Parse()
+	flag.Parse()
+
+  if *rawTags != "" {
+    flags.tags = extractTags(*rawTags)
+  }
+
+  if *flags.help {
+    flag.PrintDefaults()
+    return
+  }
+
+	log.Println("Starting bot")
 
 	botConfig, botConfigError := bot.ReadConfiguration(flags.configFilePath)
 
@@ -71,7 +96,9 @@ func main() {
 
 	log.Println(fmt.Sprintf("Selected result: %s", result.Url))
 
-	postError := bot.PostResult(result, &botConfig, &httpClient)
+	postError := bot.PostResult(result, &botConfig, &httpClient, &bot.PayloadOptions{
+		Tags: flags.tags,
+	})
 
 	if postError != nil {
 		log.Fatal(postError)
