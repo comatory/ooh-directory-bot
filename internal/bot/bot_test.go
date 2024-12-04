@@ -1,14 +1,14 @@
 package bot
 
 import (
-	"testing"
-	"io"
-	"errors"
 	"encoding/json"
+	"errors"
+	"internal/client"
+	"internal/parser"
+	"io"
 	"net/http"
 	"net/http/httptest"
-	"internal/parser"
-	"internal/client"
+	"testing"
 )
 
 type mockClient struct {
@@ -51,17 +51,17 @@ func TestSuccesfulPosting(t *testing.T) {
 	defer server.Close()
 
 	result := parser.Result{
-		Url: "https://ooh.directory/random/1",
+		Url:   "https://ooh.directory/random/1",
 		Title: "Random 1",
 	}
 	config := Config{
-		AccessToken: "123",
+		AccessToken:  "123",
 		BotServerUrl: server.URL,
 	}
 
 	err := PostResult(&result, &config, &mockClient{
 		Instance: server.Client(),
-	})
+	}, &PayloadOptions{})
 
 	if err != nil {
 		t.Errorf("Expected nil, got %v", err)
@@ -79,17 +79,17 @@ func TestUnsuccesfulPosting(t *testing.T) {
 	defer server.Close()
 
 	result := parser.Result{
-		Url: "https://ooh.directory/random/1",
+		Url:   "https://ooh.directory/random/1",
 		Title: "Random 1",
 	}
 	config := Config{
-		AccessToken: "123",
+		AccessToken:  "123",
 		BotServerUrl: server.URL,
 	}
 
 	err := PostResult(&result, &config, &mockUnsuccesfulResponseClient{
 		Instance: server.Client(),
-	})
+	}, &PayloadOptions{})
 
 	if err == nil {
 		t.Errorf("Expected error, got %v", err)
@@ -110,17 +110,17 @@ func TestAuthorizationHeader(t *testing.T) {
 	defer server.Close()
 
 	result := parser.Result{
-		Url: "https://ooh.directory/random/1",
+		Url:   "https://ooh.directory/random/1",
 		Title: "Random 1",
 	}
 	config := Config{
-		AccessToken: "u=7q",
+		AccessToken:  "u=7q",
 		BotServerUrl: server.URL,
 	}
 
 	err := PostResult(&result, &config, &mockClient{
 		Instance: server.Client(),
-	})
+	}, &PayloadOptions{})
 
 	if err != nil {
 		t.Errorf("Expected nil, got %v", err)
@@ -139,9 +139,9 @@ func TestBaseStatusPayload(t *testing.T) {
 			}
 
 			if payload.Status != expectedStatus {
-			  t.Errorf("Expected \"%s\", got \"%s\"", expectedStatus, payload.Status)
+				t.Errorf("Expected \"%s\", got \"%s\"", expectedStatus, payload.Status)
 			}
-			
+
 			io.WriteString(w, "{\"ok\":true}")
 		}),
 	)
@@ -149,17 +149,17 @@ func TestBaseStatusPayload(t *testing.T) {
 	defer server.Close()
 
 	result := parser.Result{
-		Url: "https://ooh.directory/random/1",
+		Url:   "https://ooh.directory/random/1",
 		Title: "Random 1",
 	}
 	config := Config{
-		AccessToken: "u=7q",
+		AccessToken:  "u=7q",
 		BotServerUrl: server.URL,
 	}
 
 	err := PostResult(&result, &config, &mockClient{
 		Instance: server.Client(),
-	})
+	}, &PayloadOptions{})
 
 	if err != nil {
 		t.Errorf("Expected nil, got %v", err)
@@ -178,9 +178,9 @@ func TestStatusPayloadWithAuthor(t *testing.T) {
 			}
 
 			if payload.Status != expectedStatus {
-			  t.Errorf("Expected \"%s\", got \"%s\"", expectedStatus, payload.Status)
+				t.Errorf("Expected \"%s\", got \"%s\"", expectedStatus, payload.Status)
 			}
-			
+
 			io.WriteString(w, "{\"ok\":true}")
 		}),
 	)
@@ -188,18 +188,18 @@ func TestStatusPayloadWithAuthor(t *testing.T) {
 	defer server.Close()
 
 	result := parser.Result{
-		Url: "https://ooh.directory/random/1",
-		Title: "Random 1",
+		Url:        "https://ooh.directory/random/1",
+		Title:      "Random 1",
 		AuthorName: "John Doe",
 	}
 	config := Config{
-		AccessToken: "u=7q",
+		AccessToken:  "u=7q",
 		BotServerUrl: server.URL,
 	}
 
 	err := PostResult(&result, &config, &mockClient{
 		Instance: server.Client(),
-	})
+	}, &PayloadOptions{})
 
 	if err != nil {
 		t.Errorf("Expected nil, got %v", err)
@@ -218,9 +218,9 @@ func TestStatusPayloadWithAuthorAndTimestamp(t *testing.T) {
 			}
 
 			if payload.Status != expectedStatus {
-			  t.Errorf("Expected \"%s\", got \"%s\"", expectedStatus, payload.Status)
+				t.Errorf("Expected \"%s\", got \"%s\"", expectedStatus, payload.Status)
 			}
-			
+
 			io.WriteString(w, "{\"ok\":true}")
 		}),
 	)
@@ -228,18 +228,61 @@ func TestStatusPayloadWithAuthorAndTimestamp(t *testing.T) {
 	defer server.Close()
 
 	result := parser.Result{
-		Url: "https://ooh.directory/random/1",
-		Title: "Random 1",
+		Url:        "https://ooh.directory/random/1",
+		Title:      "Random 1",
 		AuthorName: "John Doe",
-		UpdatedAt: 1612345678,
+		UpdatedAt:  1612345678,
 	}
 	config := Config{
-		AccessToken: "u=7q",
+		AccessToken:  "u=7q",
 		BotServerUrl: server.URL,
 	}
 
 	err := PostResult(&result, &config, &mockClient{
 		Instance: server.Client(),
+	}, &PayloadOptions{})
+
+	if err != nil {
+		t.Errorf("Expected nil, got %v", err)
+	}
+}
+
+func TestStatusPayloadWithTags(t *testing.T) {
+	expectedStatus := "https://ooh.directory/random/xxx Random yyyy (by John Doe, Feb 02 2021) #tag-1 #tag-2"
+	server := httptest.NewServer(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			payload := Payload{}
+			err := json.NewDecoder(r.Body).Decode(&payload)
+
+			if err != nil {
+				t.Errorf("Expected body to be non-empty, got \"%v\"", err)
+			}
+
+			if payload.Status != expectedStatus {
+				t.Errorf("Expected \"%s\", got \"%s\"", expectedStatus, payload.Status)
+			}
+
+			io.WriteString(w, "{\"ok\":true}")
+		}),
+	)
+
+	defer server.Close()
+
+	result := parser.Result{
+		Url:        "https://ooh.directory/random/xxx",
+		Title:      "Random yyyy",
+		AuthorName: "John Doe",
+		UpdatedAt:  1612345678,
+	}
+	config := Config{
+		AccessToken:  "u=7q",
+		BotServerUrl: server.URL,
+	}
+
+	err := PostResult(&result, &config, &mockClient{
+		Instance: server.Client(),
+	}, &PayloadOptions{
+		Tags: []string{"tag-1", "tag-2"},
 	})
 
 	if err != nil {

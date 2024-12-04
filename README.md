@@ -23,6 +23,14 @@ The frequency of posting depends on how often you run the binary, use scheduler 
 
 Logs are streamed to `stdout` so you can pipe them to a file if you want to.
 
+#### Tags
+
+You can provide `--tags` flag to post the status with tags. The tags must be comma-separated and without spaces and `#` symbol:
+
+```bash
+$ ./ooh-directory-bot --tags=tag1,tag2,tag3
+```
+
 ## Build
 
 Run `make build` to obtain binaries for Windows/Linux/macOS. They will be in `outputs/` directory.
