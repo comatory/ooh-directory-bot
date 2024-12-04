@@ -1,3 +1,5 @@
+<link rel="me" href="https://community.hachyderm.io/approved" />
+
 # ooh-directory-bot
 
 <img alt="logo for the bot depicting robot's head with surprised look" src="./assets/avatar.png" width="200" height="auto" />
