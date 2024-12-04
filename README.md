@@ -1,11 +1,9 @@
-<link rel="me" href="https://community.hachyderm.io/approved" />
-
 # ooh-directory-bot
 
 <img alt="logo for the bot depicting robot's head with surprised look" src="./assets/avatar.png" width="200" height="auto" />
 
 Mastodon bot which posts a single random post from [ooh.directory](https://ooh.directory).
-See the bot in action on [hachyderm.io instance](https://hachyderm.io/@ooh_directory_bot).
+See the bot in action on <a rel="me" href="https://hachyderm.io/@ooh_directory_bot">Hachyderm instance</a>.
 
 ## Usage
 
